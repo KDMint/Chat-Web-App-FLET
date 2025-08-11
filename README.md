@@ -29,7 +29,7 @@ O projeto utiliza a biblioteca **Flet** para criar uma interface de usuário int
     ```
 
 2. **Ative o Ambiente Virtual**
-    Acesse o terminal e escreva:
+    - Acesse o terminal e escreva:
     ```bash
     python -m venv .venv
     .venv\Scripts\activate
