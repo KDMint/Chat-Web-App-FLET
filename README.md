@@ -28,6 +28,13 @@ O projeto utiliza a biblioteca **Flet** para criar uma interface de usuário int
     pip install flet
     ```
 
+2. **Ative o Ambiente Virtual**
+    Acesse o terminal e escreva:
+    ```bash
+    python -m venv .venv
+    .venv\Scripts\activate
+    ```
+    
 2. **Executando o aplicativo**:
     - Execute o arquivo `main.py` no terminal com o seguinte comando:
     ```bash
