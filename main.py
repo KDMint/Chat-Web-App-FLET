@@ -1,110 +1,93 @@
-# PASSO A PASSO
-
-# Tela Início:
-# Título Principal: ...
-# Botão Iniciar chat
-
-# AO CLICAR NO BOTÃO:
-# Abrir popup
-# Título: Bem Vindo ao ...
-# Caixa de Texto: Escreva Seu Nome no Chat
-# Botão ao entrar no chat
-                    
-# AO CLICAR NO BOTÃO:
-# Fechar popup
-# Sumir com o título
-# Sumir com o botão iniciar chat
-# Carregar chat
-# Carregar campo de enviar mensagem
-# Botão enviar
-
-# AO CLICAR NO BOTÃO:
-# Enviar mensagem
-# Limpar o input
-
-# ----------------------------- #
-
-# CTRL + C no terminal para poder escrever
-
-# Biblioteca Flet
-# pip install flet <- No terminal
 import flet as ft
 
-# Função principal para rodar seu aplicativo
-def main(pagina):
-    # Título Principal
-    titulo = ft.Text('DijaTalk')
-    pagina.add(titulo)  
+# Função principal para rodar o aplicativo
+def main(pagina: ft.Page):
+    pagina.title = "TalkToMe"
+    pagina.vertical_alignment = ft.MainAxisAlignment.CENTER
+    pagina.horizontal_alignment = ft.CrossAxisAlignment.CENTER
     
-    # Para existir uma sincronização entre as mensagem enviadas
+    # Título principal
+    titulo = ft.Text('TalkToMe', size=30, weight=ft.FontWeight.BOLD)
+    pagina.add(titulo)
+
+    # Função para enviar mensagens pelo túnel
     def enviar_mensagem_tunel(mensagem):
         texto = ft.Text(mensagem)
         chat.controls.append(texto)
-
-        pagina.update() 
-
-    # Túnel de Comunicação
-    pagina.pubsub.subscribe(enviar_mensagem_tunel)
-
-    def enviar_mensagem(evento):
-        nome_do_usuario = caixa_nome.value
-        texto_campo_mensagem = campo_enviar_mensagem.value
-        # Mensagem pra ser enviada no tunel
-        mensagem = f"{nome_do_usuario}: {texto_campo_mensagem}"
-        # Enviar mensagem pra todos
-        pagina.pubsub.send_all(mensagem)
-        # limpar o input 
-        campo_enviar_mensagem.value = ""
-
         pagina.update()
 
-    # Chat (mensagens enviadas)
-    chat = ft.Column()
-    # Input para a mensagem
-    campo_enviar_mensagem = ft.TextField(label='Digite aqui a sua mensagem', on_submit=enviar_mensagem)
-    # Botão enviar texto
-    botao_enviar = ft.ElevatedButton('Enviar', on_click=enviar_mensagem)
-    # Colocando um do lado do outro
-    linha_enviar = ft.Row([campo_enviar_mensagem, botao_enviar])
-    
-    # Abrir popup  
+    # Assinatura do túnel de comunicação
+    pagina.pubsub.subscribe(enviar_mensagem_tunel)
+
+    # Função para enviar mensagem
+    def enviar_mensagem(evento):
+        nome_do_usuario = caixa_nome.value
+        texto_campo_mensagem = campo_enviar_mensagem.value.strip()
+        mensagem = f"{nome_do_usuario}: {texto_campo_mensagem}"
+        pagina.pubsub.send_all(mensagem)
+        campo_enviar_mensagem.value = ""
+        pagina.update()
+
+    # Função para abrir o popup de entrada
     def abrir_popup(evento):
         pagina.add(popup)
         pagina.dialog = popup
         popup.open = True
-
         pagina.update()
 
-    # Entrar no chat
+    # Função para entrar no chat
     def entrar_no_chat(evento):
-        # Sumir com o título
         popup.open = False
-        # Sumir com o botão iniciar chat
-        pagina.remove(titulo, botao_inicial)  
-        # Carregar chat
+        pagina.remove(titulo, botao_inicial)
         pagina.add(chat)
-        # Campo de enviar mensagem e Botão enviar 
         pagina.add(linha_enviar)
-        # Usuario entrou no chat 
         nome_usuario = caixa_nome.value
         mensagem = f"{nome_usuario} entrou no chat."
         pagina.pubsub.send_all(mensagem)
-
         pagina.update()
-    
-    # Título: Bem Vindo ao Hashzap
-    titulo_popup = ft.Text('Bem Vindo ao DijaTalk')
-    # Caixa de Texto: Escreva Seu Nome no Chat
-    caixa_nome = ft.TextField(label='Digite seu nome', on_submit=entrar_no_chat)
-    # Botão ao entrar no chat
-    botao_popup = ft.ElevatedButton('Entrar no Chat', on_click=entrar_no_chat)
 
-    popup = ft.AlertDialog(title=titulo_popup, content=caixa_nome, actions=[botao_popup])  
+    # COMPONENTES DA INTERFACE
 
-    # Botão Iniciar Chat
-    botao_inicial = ft.ElevatedButton('Iniciar chat', on_click=abrir_popup)
+    # Chat (mensagens enviadas)
+    chat = ft.Column(scroll=True, expand=True)
+
+    # Campo de texto para enviar mensagem
+    campo_enviar_mensagem = ft.TextField(
+        label='Digite aqui a sua mensagem',
+        on_submit=enviar_mensagem
+    )
+
+    # Botão para enviar mensagem
+    botao_enviar = ft.ElevatedButton(
+        'Enviar',
+        on_click=enviar_mensagem
+    )
+
+    # Linha com campo de mensagem e botão
+    linha_enviar = ft.Row([campo_enviar_mensagem, botao_enviar])
+
+    # Popup de entrada no chat
+    titulo_popup = ft.Text(f'Bem-vindo ao {titulo.value}', size=20)
+    caixa_nome = ft.TextField(
+        label='Digite seu nome',
+        on_submit=entrar_no_chat
+    )
+    botao_popup = ft.ElevatedButton(
+        'Entrar no Chat',
+        on_click=entrar_no_chat
+    )
+    popup = ft.AlertDialog(
+        title=titulo_popup,
+        content=caixa_nome,
+        actions=[botao_popup]
+    )
+
+    # Botão inicial para abrir o chat
+    botao_inicial = ft.ElevatedButton(
+        'Iniciar chat', 
+        on_click=abrir_popup
+    )
     pagina.add(botao_inicial)
 
-# Executa a função com o flet
+# Executa o aplicativo no navegador
 ft.app(target=main, view=ft.WEB_BROWSER)
-
